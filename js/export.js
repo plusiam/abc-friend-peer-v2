@@ -109,10 +109,10 @@ const ABCExport = {
         const dateString = this._getDateString();
 
         if (clientName) {
-            // 친구 이름이 있으면: "홍길동_ABC상담결과_2024-02-12.png"
+            // 친구 이름이 있으면: "홍길동_ABC상담결과_2026-02-12.png"
             return `${clientName}_ABC상담결과_${dateString}.${extension}`;
         } else {
-            // 친구 이름이 없으면: "ABC상담결과_2024-02-12.png"
+            // 친구 이름이 없으면: "ABC상담결과_2026-02-12.png"
             return `ABC상담결과_${dateString}.${extension}`;
         }
     },
