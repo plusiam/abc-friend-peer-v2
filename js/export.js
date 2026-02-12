@@ -24,7 +24,8 @@ const ABCExport = {
             useCORS: true
         }).then(canvas => {
             const link = document.createElement('a');
-            link.download = `ABC상담결과_${this._getDateString()}.png`;
+            const filename = this._generateFilename('png');
+            link.download = filename;
             link.href = canvas.toDataURL('image/png');
             link.click();
 
@@ -81,7 +82,8 @@ const ABCExport = {
                 heightLeft -= (pageHeight - margin * 2);
             }
 
-            pdf.save(`ABC상담결과_${this._getDateString()}.pdf`);
+            const filename = this._generateFilename('pdf');
+            pdf.save(filename);
             ABCUi.showNotification('PDF로 저장되었습니다', 'success');
         }).catch(err => {
             console.error('PDF 생성 실패:', err);
@@ -94,6 +96,25 @@ const ABCExport = {
      */
     print() {
         window.print();
+    },
+
+    /**
+     * 파일명 생성 (상담받는 친구 이름 포함)
+     * @param {string} extension - 파일 확장자 ('png' 또는 'pdf')
+     * @returns {string} 생성된 파일명
+     * @private
+     */
+    _generateFilename(extension) {
+        const clientName = document.getElementById('client-name')?.value.trim();
+        const dateString = this._getDateString();
+
+        if (clientName) {
+            // 친구 이름이 있으면: "홍길동_ABC상담결과_2024-02-12.png"
+            return `${clientName}_ABC상담결과_${dateString}.${extension}`;
+        } else {
+            // 친구 이름이 없으면: "ABC상담결과_2024-02-12.png"
+            return `ABC상담결과_${dateString}.${extension}`;
+        }
     },
 
     /**
