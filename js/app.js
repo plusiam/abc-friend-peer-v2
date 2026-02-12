@@ -36,6 +36,7 @@ const ABCHelper = {
 
     // ==================== 초기화 ====================
     _autoSaveInterval: null,
+    _saveDisabled: false,
 
     init() {
         this._loadFromStorage();
@@ -622,6 +623,8 @@ const ABCHelper = {
     },
 
     _doReset() {
+        // 초기화 중 자동저장 방지
+        this._saveDisabled = true;
 
         this.state = {
             currentStep: 0, worryMode: 'example', selectedWorry: null, selectedEmotions: [],
@@ -650,10 +653,23 @@ const ABCHelper = {
         ABCStorage.clear();
         this.goToWorrySection();
         ABCUi.showNotification('전체 초기화되었습니다', 'success');
+        // _saveDisabled 유지: 사용자가 입력 시 재활성화
     },
 
     // ==================== 저장 (storage.js 위임) ====================
     saveToStorage() {
+        if (this._saveDisabled) {
+            // 사용자 입력이 있으면(이벤트 리스너에서 호출) 저장 재활성화
+            const hasInput = document.getElementById('counselor-name').value ||
+                             document.getElementById('client-name').value ||
+                             this.state.selectedWorry ||
+                             this.state.selectedEmotions.length > 0;
+            if (hasInput) {
+                this._saveDisabled = false;
+            } else {
+                return;
+            }
+        }
         ABCStorage.save(this.state);
     },
 
