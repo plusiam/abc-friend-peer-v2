@@ -174,12 +174,9 @@ class SilentSpellHelper {
             #custom-emotion
         `);
         
-        console.log(`🤫 조용한 맞춤법 도우미: ${inputs.length}개 요소에 적용됩니다.`);
-        
         inputs.forEach(element => {
             if (element) {
                 this.setupElement(element);
-                console.log(`✅ 적용됨: ${element.id || element.tagName}`);
             }
         });
     }
@@ -282,7 +279,6 @@ function initSilentSpellHelper() {
         // ABCHelper가 있고 초기화된 후에만 실행
         if (typeof ABCHelper !== 'undefined') {
             silentHelper.attachToElements();
-            console.log('🤫 조용한 맞춤법 도우미가 ABCHelper와 연동되었습니다.');
         } else {
             // ABCHelper가 아직 없으면 잠시 후 재시도
             setTimeout(tryAttach, 1000);
@@ -329,7 +325,6 @@ function startNewCounseling() {
 // 기능 켜기/끄기 (필요시)
 function toggleSilentHelper(enabled = !silentHelper.enabled) {
     silentHelper.enabled = enabled;
-    console.log(`조용한 맞춤법 도우미: ${enabled ? '활성화' : '비활성화'}`);
 }
 
 // 🔧 수정된 초기화 - 지연 실행으로 안정성 확보
@@ -346,4 +341,3 @@ window.silentSpellHelper = {
     attachNow: () => silentHelper.attachToElements() // 수동 연결용
 };
 
-console.log('🤫 조용한 맞춤법 도우미가 준비되었습니다. 상담에 집중하세요!');
