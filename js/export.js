@@ -69,17 +69,18 @@ const ABCExport = {
             const imgHeight = canvas.height * imgWidth / canvas.width;
 
             // 여러 페이지 지원
+            const usableHeight = pageHeight - margin * 2;
             let heightLeft = imgHeight;
             let position = margin;
 
             pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
-            heightLeft -= (pageHeight - margin * 2);
+            heightLeft -= usableHeight;
 
             while (heightLeft > 0) {
-                position = -(pageHeight - margin * 2) * (Math.ceil((imgHeight - heightLeft) / (pageHeight - margin * 2))) + margin;
+                position -= usableHeight;
                 pdf.addPage();
                 pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
-                heightLeft -= (pageHeight - margin * 2);
+                heightLeft -= usableHeight;
             }
 
             const filename = this._generateFilename('pdf');

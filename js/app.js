@@ -35,11 +35,21 @@ const ABCHelper = {
     },
 
     // ==================== 초기화 ====================
+    _autoSaveInterval: null,
+
     init() {
         this._loadFromStorage();
         this._setupEventListeners();
         this._setupKeyboardNavigation();
-        ABCStorage.startAutoSave(() => this.saveToStorage());
+        this._autoSaveInterval = ABCStorage.startAutoSave(() => this.saveToStorage());
+
+        // 페이지 언로드 시 autoSave interval 정리
+        window.addEventListener('beforeunload', () => {
+            if (this._autoSaveInterval) {
+                clearInterval(this._autoSaveInterval);
+                this._autoSaveInterval = null;
+            }
+        });
     },
 
     _setupEventListeners() {
@@ -413,9 +423,9 @@ const ABCHelper = {
         this.state.empathy.closing = closing;
 
         let preview = '';
-        if (this.state.empathy.situation) preview += `"${this.state.empathy.situation}"라고 생각했구나. `;
+        if (this.state.empathy.situation) preview += `"${this.state.empathy.situation}"라는 일이 있었구나. `;
         if (belief) preview += `"${belief}"라는 생각이 들었구나. `;
-        if (feeling) preview += `그래서 ${feeling.replace('요', '')}구나. `;
+        if (feeling) preview += `그래서 ${feeling.replace(/요$/, '')}구나. `;
         if (closing) preview += closing;
 
         document.getElementById('empathy-preview').textContent = preview || '위에서 선택하거나 직접 입력하면 공감 표현이 자동으로 만들어집니다.';
@@ -601,13 +611,17 @@ const ABCHelper = {
 
     newConsultation() {
         if (confirm('새로운 상담을 시작하시겠습니까? 현재 내용은 저장되지 않습니다.')) {
-            this.resetAll();
+            this._doReset();
         }
     },
 
     // ==================== 초기화 ====================
     resetAll() {
         if (!confirm('정말로 전체 초기화하시겠습니까?')) return;
+        this._doReset();
+    },
+
+    _doReset() {
 
         this.state = {
             currentStep: 0, worryMode: 'example', selectedWorry: null, selectedEmotions: [],
@@ -660,8 +674,29 @@ const ABCHelper = {
 
         ABCUi.renderEmotionTags(this.state.selectedEmotions, (index) => this.removeEmotion(index));
 
+        // 감정 카드 선택 상태 복원
+        this.state.selectedEmotions.forEach(emotion => {
+            const card = document.querySelector(`.emotion-card[data-emotion="${emotion.name}"]`);
+            if (card) {
+                card.classList.add('selected');
+                card.setAttribute('aria-checked', 'true');
+            }
+        });
+
+        // 랜덤 격려 메시지 복원
+        if (this.state.encouragement.randomMessage) {
+            document.getElementById('random-message-text').textContent = this.state.encouragement.randomMessage;
+            document.querySelector('.random-message-emoji').textContent = '🎉';
+        }
+
+        // 2주 약속 체크박스 복원
+        if (this.state.encouragement.twoWeekPromise) {
+            document.getElementById('two-week-promise').checked = true;
+        }
+
         if (this.state.encouragement.favorited) {
             document.getElementById('favorite-btn').classList.add('favorited');
+            document.getElementById('favorite-btn').setAttribute('aria-pressed', 'true');
         }
 
         ABCUi.showNotification('이전 작업 내용을 불러왔습니다', 'success');
