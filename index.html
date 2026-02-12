@@ -418,6 +418,19 @@
         <span class="toast-message" id="toast-message"></span>
     </div>
 
+    <!-- ==================== RESTORE DIALOG ==================== -->
+    <div class="restore-dialog-overlay hidden" id="restore-dialog" role="dialog" aria-modal="true" aria-labelledby="restore-title">
+        <div class="restore-dialog">
+            <div class="restore-icon">📋</div>
+            <h3 id="restore-title">이전 상담 기록이 있어요</h3>
+            <p class="restore-desc" id="restore-desc"></p>
+            <div class="restore-actions">
+                <button class="restore-btn restore-btn-continue" id="restore-continue-btn">이어서 하기</button>
+                <button class="restore-btn restore-btn-new" id="restore-new-btn">새로 시작하기</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== SCRIPTS ==================== -->
     <script src="js/data.js"></script>
     <script src="js/ui.js"></script>

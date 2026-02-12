@@ -677,6 +677,46 @@ const ABCHelper = {
         const data = ABCStorage.load();
         if (!data) return;
 
+        // 의미 있는 데이터가 있는지 확인
+        const hasContent = data.counselorName || data.clientName ||
+                           data.state.selectedWorry || data.state.selectedEmotions.length > 0;
+        if (!hasContent) {
+            ABCStorage.clear();
+            return;
+        }
+
+        // 복원 선택 다이얼로그 표시
+        this._showRestoreDialog(data);
+    },
+
+    _showRestoreDialog(data) {
+        const dialog = document.getElementById('restore-dialog');
+        const desc = document.getElementById('restore-desc');
+
+        // 설명 텍스트 구성
+        const parts = [];
+        if (data.counselorName) parts.push(`상담자: ${data.counselorName}`);
+        if (data.clientName) parts.push(`친구: ${data.clientName}`);
+        if (data.state.selectedWorry) parts.push(`고민: ${data.state.selectedWorry.A}`);
+        desc.textContent = parts.join(' · ') || '이전에 작성하던 내용이 있습니다.';
+
+        dialog.classList.remove('hidden');
+
+        // 이어서 하기
+        document.getElementById('restore-continue-btn').onclick = () => {
+            this._applyRestoredData(data);
+            dialog.classList.add('hidden');
+            ABCUi.showNotification('이전 내용을 불러왔습니다', 'success');
+        };
+
+        // 새로 시작하기
+        document.getElementById('restore-new-btn').onclick = () => {
+            ABCStorage.clear();
+            dialog.classList.add('hidden');
+        };
+    },
+
+    _applyRestoredData(data) {
         this.state = data.state;
         ABCStorage.restoreInputs(data);
 
@@ -714,8 +754,6 @@ const ABCHelper = {
             document.getElementById('favorite-btn').classList.add('favorited');
             document.getElementById('favorite-btn').setAttribute('aria-pressed', 'true');
         }
-
-        ABCUi.showNotification('이전 작업 내용을 불러왔습니다', 'success');
     }
 };
 
