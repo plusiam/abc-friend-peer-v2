@@ -160,18 +160,21 @@ class SilentSpellHelper {
      * ABC 친구 도우미의 입력 요소들에 적용 - 🔧 수정됨
      */
     attachToElements() {
-        // 실제 HTML 요소들과 매칭되는 셀렉터로 수정
+        // 실제 HTML 요소들과 매칭되는 셀렉터
         const inputs = document.querySelectorAll(`
-            #empathy-text,
-            #new-thinking,
-            #help-suggestions,
+            #empathy-manual,
+            #empathy-belief-custom,
+            #empathy-feeling-custom,
+            #empathy-closing-custom,
+            #helpful-thinking,
+            #concrete-help,
             #personal-encouragement,
             #counselor-name,
             #client-name,
-            #custom-a,
-            #custom-b,
-            #custom-c,
-            #custom-emotion
+            #direct-a,
+            #direct-b,
+            #direct-c,
+            #custom-emotion-input
         `);
         
         inputs.forEach(element => {
@@ -219,18 +222,18 @@ class SilentSpellHelper {
      */
     detectStep(element) {
         const id = element.id;
-        
+
         // ID 기반 단계 감지
-        if (id === 'empathy-text') return 'expression';
-        if (id === 'new-thinking' || id === 'help-suggestions') return 'solution';
+        if (['empathy-manual', 'empathy-belief-custom', 'empathy-feeling-custom', 'empathy-closing-custom'].includes(id)) return 'expression';
+        if (id === 'helpful-thinking' || id === 'concrete-help') return 'solution';
         if (id === 'personal-encouragement') return 'encouragement';
-        if (['counselor-name', 'client-name', 'custom-emotion'].includes(id)) return 'general';
-        if (['custom-a', 'custom-b', 'custom-c'].includes(id)) return 'empathy';
-        
-        // 부모 요소에서 단계 정보 찾기
-        const section = element.closest('#step1, #step2, #step3, #step4');
+        if (['counselor-name', 'client-name', 'custom-emotion-input'].includes(id)) return 'general';
+        if (['direct-a', 'direct-b', 'direct-c'].includes(id)) return 'empathy';
+
+        // 부모 요소에서 단계 정보 찾기 (하이픈 포함된 실제 ID)
+        const section = element.closest('#step-1, #step-2, #step-3, #step-4');
         if (section) {
-            const stepNum = section.id.replace('step', '');
+            const stepNum = section.id.replace('step-', '');
             switch(stepNum) {
                 case '1': return 'empathy';
                 case '2': return 'expression';
